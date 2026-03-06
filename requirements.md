@@ -152,7 +152,7 @@ Users often wear multiple hats — architecting, coding, and deploying infrastru
 
 ### NFR-4: Currency
 
-The skill must not hard-code guidance that may become stale. Instead, it should instruct the agent to fetch current documentation at query time. The skill itself contains procedures, reasoning frameworks, and service catalogs that serve as routing aids (so the agent knows *what to search for*), but the agent must verify specifics via MCP rather than treating these catalogs as authoritative.
+The skill must not hard-code guidance that may become stale. Instead, it should instruct the agent to fetch current documentation at query time. If the skill includes static content such as procedures, reasoning frameworks, or service catalogs, these should serve as routing aids (so the agent knows *what to search for*), not as authoritative sources — the agent must verify specifics via MCP.
 
 ### NFR-5: Scope Boundaries
 
@@ -164,12 +164,11 @@ The skill must clearly define what it does **not** do:
 - Does not provide pricing calculations (directs users to Azure Pricing Calculator)
 - Does not cover non-Azure cloud providers
 
-## Open Questions
+## Design Decisions
 
-_All resolved during implementation:_
+The following questions were resolved during the first implementation and are recorded here for context. Implementers may revisit these choices.
 
-1. ~~Should the skill be a single comprehensive skill or a family of focused skills?~~ Hybrid: single hub SKILL.md with modular reference files.
-2. ~~What agent platform(s) should be targeted first?~~ GitHub Copilot (skill name: `ghcpcli-azarch`), using the agentskills.io format for portability.
-3. ~~Should the skill include worked examples or scenario walkthroughs?~~ No — the skill uses procedures and MCP queries rather than baked-in scenarios, keeping content current per NFR-4.
-4. ~~How should the skill handle topics that span multiple frameworks?~~ The decision tree routes to the most relevant reference first and pulls from others as needed (route #5).
-5. ~~Should there be an explicit "assessment mode"?~~ Addressed by FR-2 (standalone WAF review) and BR-1 (context-gathering behavior).
+1. **Single skill vs. family of skills?** — A hybrid approach works well: a single hub file with modular reference files. A monolithic single-file approach is also viable for smaller implementations.
+2. **Worked examples or scenario walkthroughs?** — Prefer procedures and MCP queries over baked-in scenarios, keeping content current per NFR-4.
+3. **Topics spanning multiple frameworks?** — Route to the most relevant framework first, then pull from others as needed.
+4. **Explicit "assessment mode"?** — Not needed as a separate mode; FR-2 (standalone WAF review) and BR-1 (context-gathering behavior) cover this.
