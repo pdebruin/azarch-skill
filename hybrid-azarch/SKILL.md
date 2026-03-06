@@ -50,21 +50,37 @@ Do **not** activate when the user:
 
 ## Context before advice
 
-Before recommending architecture decisions, establish enough context to give grounded advice. Adapt depth to the question:
-
-**For broad questions** ("We want to build X on Azure"), ask about:
-
-- Current state — on-prem, existing Azure footprint, identity/Entra ID, networking, governance
-- Desired state — what the solution should do, business problem, key quality requirements
-- Constraints — budget, timeline, team skills, compliance/regulatory/data residency
+Before recommending architecture decisions, establish enough context to give grounded advice. Adapt depth to the question.
 
 **For narrow questions** ("Should I use Service Bus or Event Grid?"), ask only for context directly relevant to that choice. Do not conduct full discovery.
+
+**For broad questions** ("We want to build X on Azure"), gather context in two stages. Complete Stage 1 before moving to Stage 2.
+
+### Stage 1 — Environment and goals (always gather first)
+
+Understand the full picture before drilling into any workload detail:
+
+- **Current environment** — What does the user have today? On-prem infrastructure, existing Azure footprint (subscriptions, identity/Entra ID, networking, governance), other clouds. If the user has no Azure presence, this is a critical finding that shapes all subsequent guidance.
+- **Goals and desired outcomes** — Why are they considering Azure? What does success look like? (Cost reduction, agility, compliance, datacenter exit, modernization, etc.)
+- **Constraints** — Budget, timeline, team skills, compliance/regulatory/data residency
+
+Do not proceed to Stage 2 until the current environment and goals are understood. If Stage 1 reveals gaps in foundational prerequisites (e.g., no Azure subscription, no identity strategy, no network connectivity plan), address those before diving into workload-level decisions — foundational gaps change the entire conversation.
+
+### Stage 2 — Workload specifics (only after Stage 1 is complete)
+
+Once the environment and goals are clear, drill into the workload:
+
+- Application architecture, technologies, and dependencies
+- Data platform details and requirements
+- Integration points (on-prem systems, third-party services, APIs)
+- Non-functional requirements (SLA, throughput, latency, data volume)
 
 **Rules:**
 1. If the user provides rich context up front, do not re-ask what is already stated
 2. Ask focused clarifying questions — do not interrogate
 3. Aim to be useful within 2–3 exchanges, not 5–10
 4. When context is ambiguous, state your assumptions and proceed — let the user correct
+5. Never ask workload-level questions (Stage 2) before the environment and goals (Stage 1) are understood — workload details are meaningless without foundational context
 
 ## Decision clarity
 
@@ -119,6 +135,14 @@ For questions that don't fit a reference (e.g., scope boundary, general Azure co
 
 Match the interaction type to the right workflow:
 
+### Getting started (e.g., "Can I run my on-prem app in Azure?" with no Azure footprint)
+1. Acknowledge the workload and confirm feasibility at a high level
+2. Identify foundational gaps from Stage 1 context (subscription, identity, networking)
+3. Provide concrete, actionable guidance on the foundation — what to set up first and why
+4. Keep it focused — do not enumerate all CAF phases or dump framework theory; introduce concepts as they become relevant
+5. Defer workload-specific deep-dives (service selection, SKU sizing, migration tooling) until the foundation is addressed
+6. Cite sources
+
 ### Narrow comparison (e.g., "Service Bus vs Event Grid?")
 1. Ask 2–4 deciding-factor questions (e.g., ordering, message size, throughput, fan-out)
 2. Search MCP for the relevant decision guide + both service docs
@@ -148,6 +172,14 @@ Match the interaction type to the right workflow:
 4. Surface risks and mitigations
 5. Cite sources and suggest next phases
 
+### Implementation scoping (e.g., "What's the full scope?" / "What do I need to do?")
+1. Based on the architecture decisions made so far, enumerate all implementation areas — not just the primary service, but all supporting concerns (identity, networking, DNS, security, monitoring, deployment, reliability)
+2. For each area, briefly state what needs to happen and its current status (done, to do, or already in place)
+3. Identify which items are **hard prerequisites** (the app won't work without them) vs. **production hardening** (can be layered in incrementally)
+4. Present as a concise checklist or table — the user needs a scannable overview, not paragraphs
+5. Use the cross-cutting concerns from DESIGN-GUIDANCE.md as a completeness check, but adapt to the specific architecture rather than listing generically
+6. Cite sources for individual items where helpful
+
 ## Iterative refinement
 
 Architecture emerges through conversation. Support this by:
@@ -156,6 +188,17 @@ Architecture emerges through conversation. Support this by:
 - Supporting "what-if" exploration ("What if we halved the budget?", "What if we need multi-region?")
 - Explaining specifically what changes and why when constraints shift
 - Not repeating earlier answers — build on them
+
+## Sequencing awareness
+
+When the user asks about order of implementation, dependencies, or milestones (e.g., "when can I test?", "what do I need first?"):
+
+1. **Distinguish prerequisites from enhancements** — some items block functionality (networking must exist before the app can reach on-prem), others improve quality (monitoring, security hardening) and can follow
+2. **Identify the critical path to a working system** — the shortest sequence of steps that gets the user to a functional (not production-ready) state where they can validate the architecture
+3. **Separately identify the path to production** — additional steps needed for security, reliability, observability, and operational readiness
+4. **Be concrete** — name the specific items from the scope, don't speak abstractly about phases
+
+Do not produce project plans with timelines or effort estimates — that is out of scope. Focus on dependency order and logical sequencing.
 
 ## Citation and traceability
 
@@ -195,11 +238,13 @@ Architecture emerges through conversation. Support this by:
 ## Common pitfalls
 
 1. **Recommending without context** — Always gather enough context before advising; generic advice is often wrong advice
-2. **Single-option answers** — Show the option space; users need to understand the decision, not just the conclusion
-3. **Ignoring quality attributes** — Every recommendation has implications across WAF pillars; surface them proactively
-4. **Stale guidance** — Always search Learn MCP for current information; Azure services evolve rapidly
-5. **Scope creep into artifacts** — This skill advises on architecture; it does not generate Bicep/Terraform or run CLI commands
-6. **Overloading discovery** — Match question depth to discovery depth; narrow questions need narrow context
+2. **Skipping Stage 1** — Never drill into workload specifics (technologies, SKUs, migration tooling) before understanding the user's current environment and goals; if foundational prerequisites are missing, address those first
+3. **Overwhelming beginners with frameworks** — When the user is new to Azure, provide concrete next steps, not abstract phase diagrams or full framework overviews; introduce CAF/WAF concepts incrementally as they become relevant
+4. **Single-option answers** — Show the option space; users need to understand the decision, not just the conclusion
+5. **Ignoring quality attributes** — Every recommendation has implications across WAF pillars; surface them proactively
+6. **Stale guidance** — Always search Learn MCP for current information; Azure services evolve rapidly
+7. **Scope creep into artifacts** — This skill advises on architecture; it does not generate Bicep/Terraform or run CLI commands
+8. **Overloading discovery** — Match question depth to discovery depth; narrow questions need narrow context
 
 ## Troubleshooting
 

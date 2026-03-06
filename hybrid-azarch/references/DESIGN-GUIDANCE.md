@@ -79,6 +79,14 @@ Every architecture needs these addressed:
 | Disaster recovery | RTO/RPO targets, backup strategy, failover approach |
 | Governance | Resource naming, tagging, Azure Policy, cost management |
 
+### Boundary-spanning implications
+
+When the architecture places components across different boundaries (on-prem and Azure, multiple regions, multiple subscriptions, different networks), actively search MCP for implications specific to the services and boundaries involved. Common concerns include connectivity, DNS resolution, latency, authentication across boundaries, and reliability of the links between them.
+
+Do not attempt to enumerate these from memory — the implications are service-specific and evolve. Let Learn be the source of truth.
+
+MCP search: `"[service] VNet integration"`, `"[service] hybrid connectivity"`, `"[service] on-premises"`, `"[service] multi-region"`, `"migrate [workload type] to Azure considerations"`
+
 ## FinOps and cost awareness
 
 When discussing service selection, proactively note cost implications:
