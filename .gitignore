@@ -1,2 +1,11 @@
 # Exclude copied-in agent skills (not part of this repo's content)
 .agents/
+
+# Internal investigation notes (not for public repo)
+investigation.md
+azure-deploy-plugin-investigation.md
+azure-deploy-plugin-investigation-background.md
+azure-deploy-plugin-investigation-briefing.md
+
+# Downloaded icon set (large, not for public repo)
+Azure_Public_Service_Icons/
